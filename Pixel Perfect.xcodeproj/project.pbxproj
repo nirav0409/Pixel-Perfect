@@ -10,6 +10,11 @@
 		FAEC46EA22A90A0A00AEC1CF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAEC46E922A90A0A00AEC1CF /* AppDelegate.swift */; };
 		FAEC46EC22A90A0C00AEC1CF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FAEC46EB22A90A0C00AEC1CF /* Assets.xcassets */; };
 		FAEC46EF22A90A0C00AEC1CF /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = FAEC46ED22A90A0C00AEC1CF /* MainMenu.xib */; };
+		FAEC46F922A9A37100AEC1CF /* sideBarCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAEC46F722A9A37100AEC1CF /* sideBarCollectionView.swift */; };
+		FAEC46FA22A9A37100AEC1CF /* sideBarCollectionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = FAEC46F822A9A37100AEC1CF /* sideBarCollectionView.xib */; };
+		FAEC471A22AA20B300AEC1CF /* drawMainUi.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAEC471922AA20B300AEC1CF /* drawMainUi.swift */; };
+		FAEC471C22AAA07F00AEC1CF /* downBarUi.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAEC471B22AAA07F00AEC1CF /* downBarUi.swift */; };
+		FAEC471E22AD687700AEC1CF /* boxUi.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAEC471D22AD687700AEC1CF /* boxUi.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +24,11 @@
 		FAEC46EE22A90A0C00AEC1CF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		FAEC46F022A90A0C00AEC1CF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FAEC46F122A90A0C00AEC1CF /* Pixel_Perfect.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Pixel_Perfect.entitlements; sourceTree = "<group>"; };
+		FAEC46F722A9A37100AEC1CF /* sideBarCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sideBarCollectionView.swift; sourceTree = "<group>"; };
+		FAEC46F822A9A37100AEC1CF /* sideBarCollectionView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = sideBarCollectionView.xib; sourceTree = "<group>"; };
+		FAEC471922AA20B300AEC1CF /* drawMainUi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = drawMainUi.swift; sourceTree = "<group>"; };
+		FAEC471B22AAA07F00AEC1CF /* downBarUi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = downBarUi.swift; sourceTree = "<group>"; };
+		FAEC471D22AD687700AEC1CF /* boxUi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = boxUi.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +66,11 @@
 				FAEC46ED22A90A0C00AEC1CF /* MainMenu.xib */,
 				FAEC46F022A90A0C00AEC1CF /* Info.plist */,
 				FAEC46F122A90A0C00AEC1CF /* Pixel_Perfect.entitlements */,
+				FAEC46F722A9A37100AEC1CF /* sideBarCollectionView.swift */,
+				FAEC46F822A9A37100AEC1CF /* sideBarCollectionView.xib */,
+				FAEC471B22AAA07F00AEC1CF /* downBarUi.swift */,
+				FAEC471922AA20B300AEC1CF /* drawMainUi.swift */,
+				FAEC471D22AD687700AEC1CF /* boxUi.swift */,
 			);
 			path = "Pixel Perfect";
 			sourceTree = "<group>";
@@ -120,6 +135,7 @@
 			files = (
 				FAEC46EC22A90A0C00AEC1CF /* Assets.xcassets in Resources */,
 				FAEC46EF22A90A0C00AEC1CF /* MainMenu.xib in Resources */,
+				FAEC46FA22A9A37100AEC1CF /* sideBarCollectionView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -131,6 +147,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				FAEC46EA22A90A0A00AEC1CF /* AppDelegate.swift in Sources */,
+				FAEC471C22AAA07F00AEC1CF /* downBarUi.swift in Sources */,
+				FAEC471E22AD687700AEC1CF /* boxUi.swift in Sources */,
+				FAEC471A22AA20B300AEC1CF /* drawMainUi.swift in Sources */,
+				FAEC46F922A9A37100AEC1CF /* sideBarCollectionView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
