@@ -25,11 +25,21 @@ class downBarUi: NSView {
         rows.intValue = 1;
         hStart.intValue = 0;
         vStart.intValue = 0;
-
+        NotificationCenter.default.addObserver(self, selector: #selector(downBarUi.updateBoxes(_:)), name: NSNotification.Name(rawValue: "updateBoxes"), object: nil)
         // Drawing code here.
     }
     
 
+    @objc func updateBoxes(_ notification: NSNotification){
+        let value = notification.userInfo?["value"]
+        let layout =  value as! myLayout
+        hPanel.intValue = Int32(layout.totalWidth)
+        vPanel.intValue = Int32((layout.totalHeight))
+        cols.intValue = Int32((layout.countX))
+        rows.intValue = Int32((layout.countY))
+        hStart.intValue = Int32((layout.startXPoint))
+        vStart.intValue = Int32((layout.startYPoint))
+    }
     @IBAction func NsTextViewChanged(_ sender: NSTextField) {
         var value = sender.stringValue
         

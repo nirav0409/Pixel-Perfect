@@ -10,12 +10,45 @@ import Cocoa
 
 class sideBarCollectionView: NSCollectionViewItem {
 
-   
+
+    
+    override var isSelected: Bool{
+        didSet{
+            super.isSelected = isSelected
+            updateColor()
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
-     //   layoutLabel.stringValue = "80 Panel-H \n 80 Panel-V \n 1 Rows \n 1 Cols "
+
+        print("sideBarCollectionView.viewDidLoad")
+        self.view.wantsLayer = true
+        view.layer?.backgroundColor = NSColor.black.cgColor
+    
+    }
+    func updateColor(){
+        if isSelected{
+            print("sideBarCollectionView.updateColor")
+            switch highlightState {
+            case .none:
+                view.layer?.backgroundColor = NSColor.black.cgColor
+                break
+            case .forSelection:
+                view.layer?.backgroundColor = NSColor.gray.cgColor
+                break
+            case .forDeselection:
+                view.layer?.backgroundColor = NSColor.black.cgColor
+                break
+            default:
+                print("isSelected Default case")
+                break
+            }
+        }else{
+            view.layer?.backgroundColor = NSColor.black.cgColor
+            
+        }
         
     }
     

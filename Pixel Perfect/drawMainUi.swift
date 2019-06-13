@@ -72,6 +72,7 @@ class drawMainUi: NSView {
         self.subviews.append(headerView!)
         self.currentLayoutIndex = layouts.count - 1
 
+
     }
     @objc func removeLayout(_ notification: NSNotification){
         
@@ -98,9 +99,14 @@ class drawMainUi: NSView {
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.drawUI(_:)), name: NSNotification.Name(rawValue: "vStart"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.addLayout(_:)), name: NSNotification.Name(rawValue: "addLayout"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.removeLayout(_:)), name: NSNotification.Name(rawValue: "removeLayout"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.updateSelectedIndex(_:)), name: NSNotification.Name(rawValue: "selectionChanged"), object: nil)
     }
     
-    
+    @objc func updateSelectedIndex(_ notification: NSNotification){
+        let value = notification.userInfo?["value"]
+        self.currentLayoutIndex = value as! Int
+        NotificationCenter.default.post(name : NSNotification.Name(rawValue: "updateBoxes") , object: self,userInfo: ["value" : self.layouts[self.currentLayoutIndex]])
+    }
     @objc func drawUI(_ notification: NSNotification){
         
         let name = notification.name.rawValue
@@ -149,8 +155,8 @@ class drawMainUi: NSView {
             headerView?.wantsLayer = true
             headerView?.layer?.backgroundColor = NSColor.yellow.cgColor
             self.subviews.insert(headerView!, at: currentLayoutIndex)
-
             self.layoutSubtreeIfNeeded()
+             NotificationCenter.default.post(name : NSNotification.Name(rawValue: "updateLayoutDetials") , object: self,userInfo: ["value" : self.layouts[self.currentLayoutIndex]])
         }
    
         

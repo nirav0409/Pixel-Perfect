@@ -706,11 +706,11 @@
                                         <rect key="frame" x="1" y="1" width="188" height="518"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
-                                            <collectionView ambiguous="YES" id="fSt-jD-ynG">
+                                            <collectionView ambiguous="YES" selectable="YES" allowsEmptySelection="NO" id="fSt-jD-ynG">
                                                 <rect key="frame" x="0.0" y="0.0" width="188" height="158"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                                 <collectionViewFlowLayout key="collectionViewLayout" minimumInteritemSpacing="1" minimumLineSpacing="1" id="bOQ-Kc-f4W">
-                                                    <size key="itemSize" width="180" height="60"/>
+                                                    <size key="itemSize" width="180" height="100"/>
                                                 </collectionViewFlowLayout>
                                                 <color key="primaryBackgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </collectionView>

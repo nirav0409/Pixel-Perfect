@@ -12,8 +12,8 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCollectionViewDataSource {
     
     var count = 1;
+    var selectedIndex : Int = 0
 
-    
     func collectionView(_ collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
         return count
     }
@@ -21,9 +21,13 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
     func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
         let collectionViewItem = NSUserInterfaceItemIdentifier("sideBarCollectionView")
         let item = collectionView.makeItem(withIdentifier: collectionViewItem, for: indexPath)
+        item.textField?.stringValue = "80 Panel-H \n 80 Panel-V \n 1 Rows \n 1 Cols "
+        //item.highlightState = .forSelection
+       // item.isSelected = true
+    
         return item
     }
-    
+
 
     @IBOutlet weak var sideColView: NSCollectionView!
     @IBOutlet weak var window: NSWindow!
@@ -37,15 +41,27 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
         sideColView.register(item, forItemWithIdentifier: collectionViewItem)
         sideColView.dataSource = self
         sideColView.delegate = self
+        sideColView.allowsMultipleSelection = false
+       // print(sideColView.numberOfItems(inSection: 0))
+        print(sideColView.indexPathsForVisibleItems())
+        sideColView.item(at: 0)?.highlightState = .forSelection
+        sideColView.selectItems(at: [[0,0]], scrollPosition: NSCollectionView.ScrollPosition.top)
+         NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.updateLayoutDetials(_:)), name: NSNotification.Name(rawValue: "updateLayoutDetials"), object: nil)
+
       //  drawMainUi.registerNotification()
 
+    }
+    @objc func updateLayoutDetials(_ notification : NSNotification){
+        var layout  = notification.userInfo?["value"] as! myLayout
+        
+        sideColView.item(at: self.selectedIndex)?.textField?.stringValue = "\(layout.totalWidth) Panel-H \n \(layout.totalHeight) Panel-V \n \(layout.countY) Rows \n \(layout.countX) Cols "
     }
     
     
     @IBAction func removeButtonClicked(_ sender: Any) {
         print("Remove Layout")
         if(count > 0){
-        let removeAtIndexPath = IndexPath(item: count-1, section: 0)
+        let removeAtIndexPath = IndexPath(item: selectedIndex, section: 0)
         var indexPaths: Set<IndexPath> = []
         indexPaths.insert(removeAtIndexPath)
         count = count - 1
@@ -64,13 +80,21 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
         self.sideColView.performBatchUpdates({
              self.sideColView.insertItems(at: indexPaths)
         }, completionHandler: nil)
+        
         NotificationCenter.default.post(name : NSNotification.Name(rawValue: "addLayout") , object: self)
+
+     //   sideColView.selectItems(at: [[0,count-1]], scrollPosition: NSCollectionView.ScrollPosition.top)
 
         //var b = boxUi()
         
     }
     
-    
+    func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
+      
+        self.selectedIndex = (indexPaths.first)![1]
+        NotificationCenter.default.post(name : NSNotification.Name(rawValue: "selectionChanged") , object: self,userInfo: ["value" : (indexPaths.first)![1]])
+        
+    }
 
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
