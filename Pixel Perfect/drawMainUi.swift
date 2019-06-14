@@ -23,7 +23,7 @@ class myLayout{
         
     }
     func getRect() -> CGRect{
-        var rect = CGRect(x: startXPoint, y: startYPoint, width: ((totalWidth+offset) * countX) , height: ((totalHeight+offset) * countY))
+        var rect = CGRect(x: startXPoint, y: startYPoint, width: ((totalWidth+offset) * countX + offset) , height: ((totalHeight+offset) * countY + offset))
         return rect
     }
     
@@ -100,9 +100,35 @@ class drawMainUi: NSView {
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.addLayout(_:)), name: NSNotification.Name(rawValue: "addLayout"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.removeLayout(_:)), name: NSNotification.Name(rawValue: "removeLayout"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.updateSelectedIndex(_:)), name: NSNotification.Name(rawValue: "selectionChanged"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.exportToPNG(_:)), name: NSNotification.Name(rawValue: "exportToPNG"), object: nil)
     }
-    
-    @objc func updateSelectedIndex(_ notification: NSNotification){
+     @objc func exportToPNG(_ notification: NSNotification){
+      // let rect = CGRect(x: 0, y: 0, width: 100, height: 100)
+      // var myView = NSView(frame: rect)
+        var i : Int = 0
+        var myView = self as! NSView
+        /*for views in self.subviews{
+            i += 1
+            print(i)
+            myView.addSubview(views)
+        }*/
+        var rep = myView.bitmapImageRepForCachingDisplay(in: myView.bounds)!
+        myView.cacheDisplay(in: myView.bounds, to: rep)
+        var image = "myTestimage.png"
+        var url = URL(fileURLWithPath: image)
+        if let data = rep.representation(using: NSBitmapImageRep.FileType.png, properties: [:]) {
+            do{
+                try data.write(to: url)
+            } catch let error {
+                print("Error: \(error)")
+            }
+            
+        }
+        
+    }
+ 
+ 
+        @objc func updateSelectedIndex(_ notification: NSNotification){
         let value = notification.userInfo?["value"]
         self.currentLayoutIndex = value as! Int
         NotificationCenter.default.post(name : NSNotification.Name(rawValue: "updateBoxes") , object: self,userInfo: ["value" : self.layouts[self.currentLayoutIndex]])
@@ -113,6 +139,10 @@ class drawMainUi: NSView {
         var update = false
         let value = notification.userInfo?["value"]
         print("drawMainUi.drawUI value \(value)")
+        if(value as! String == ""){
+            return
+            
+        }
         switch name {
         case "hPanel":
             if(self.layouts[self.currentLayoutIndex].totalWidth != Int((value) as! String)!){

@@ -21,7 +21,7 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
     func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
         let collectionViewItem = NSUserInterfaceItemIdentifier("sideBarCollectionView")
         let item = collectionView.makeItem(withIdentifier: collectionViewItem, for: indexPath)
-        item.textField?.stringValue = "80 Panel-H \n 80 Panel-V \n 1 Rows \n 1 Cols "
+        item.textField?.stringValue = "80 Panel-H \n80 Panel-V \n1 Cols \n1 Rows "
         //item.highlightState = .forSelection
        // item.isSelected = true
     
@@ -32,7 +32,10 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
     @IBOutlet weak var sideColView: NSCollectionView!
     @IBOutlet weak var window: NSWindow!
 
-
+    @IBAction func exportToPNG(_ sender: Any) {
+         NotificationCenter.default.post(name : NSNotification.Name(rawValue: "exportToPNG") , object: self)
+    }
+    
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
         print("appDelegate.applicationDidFinishLaunching")
@@ -54,7 +57,7 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
     @objc func updateLayoutDetials(_ notification : NSNotification){
         var layout  = notification.userInfo?["value"] as! myLayout
         
-        sideColView.item(at: self.selectedIndex)?.textField?.stringValue = "\(layout.totalWidth) Panel-H \n \(layout.totalHeight) Panel-V \n \(layout.countY) Rows \n \(layout.countX) Cols "
+        sideColView.item(at: self.selectedIndex)?.textField?.stringValue = "\(layout.totalWidth) Panel-H \n\(layout.totalHeight) Panel-V \n\(layout.countX) Cols  \n\(layout.countY) Rows"
     }
     
     

@@ -21,8 +21,8 @@ class boxUi: NSView {
     required init?(_ dirtyRect: NSRect,_ layout :myLayout){
         super.init(frame :dirtyRect)
         print("boxUi.init")
-        self.startXPoint = 0
-        self.startYPoint = 0
+        self.startXPoint = 1
+        self.startYPoint = 1
         self.countX = layout.countX
         self.countY = layout.countY
         self.totalHeight = layout.totalHeight
