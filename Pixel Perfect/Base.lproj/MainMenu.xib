@@ -2,13 +2,13 @@
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14490.70"/>
-        <capability name="System colors introduced in macOS 10.13" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
             <connections>
                 <outlet property="delegate" destination="Voe-Tx-rLC" id="GzC-gU-4Uq"/>
+                <outlet property="mainUiRoster" destination="R5i-c0-2VG" id="bFR-fg-0HV"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -728,17 +728,6 @@
                             </subviews>
                         </view>
                     </box>
-                    <box identifier="centerBox" wantsLayer="YES" fixedFrame="YES" boxType="custom" cornerRadius="4" title="Center Box" translatesAutoresizingMaskIntoConstraints="NO" id="dev-6c-o2B">
-                        <rect key="frame" x="6" y="198" width="850" height="460"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <view key="contentView" identifier="drawMainUi" ambiguous="YES" id="kbJ-wm-Owb" customClass="drawMainUi" customModule="Pixel_Perfect" customModuleProvider="target">
-                            <rect key="frame" x="1" y="1" width="848" height="458"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            <shadow key="shadow">
-                                <color key="color" name="findHighlightColor" catalog="System" colorSpace="catalog"/>
-                            </shadow>
-                        </view>
-                    </box>
                     <box fixedFrame="YES" boxType="custom" cornerRadius="4" title="Down Box" translatesAutoresizingMaskIntoConstraints="NO" id="irC-K9-8Wi">
                         <rect key="frame" x="6" y="2" width="850" height="190"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -878,13 +867,59 @@
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
+                                <textField identifier="hSize" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JPG-Dx-LBQ">
+                                    <rect key="frame" x="684" y="128" width="103" height="22"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" identifier="hPanel" drawsBackground="YES" id="jn0-c8-UKq">
+                                        <numberFormatter key="formatter" formatterBehavior="default10_4" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" maximumFractionDigits="3" id="fEu-Ij-bSB"/>
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                    <connections>
+                                        <action selector="NsTextViewChanged:" target="WVg-IM-uUH" id="Pzu-O0-aco"/>
+                                    </connections>
+                                </textField>
+                                <textField identifier="vSize" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Xr6-DX-IqB">
+                                    <rect key="frame" x="684" y="65" width="103" height="22"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" identifier="hPanel" drawsBackground="YES" id="ZnF-qb-1Bk">
+                                        <numberFormatter key="formatter" formatterBehavior="default10_4" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" maximumFractionDigits="3" id="tqt-hj-eYH"/>
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                    <connections>
+                                        <action selector="NsTextViewChanged:" target="WVg-IM-uUH" id="5w0-wg-vfi"/>
+                                    </connections>
+                                </textField>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="h07-Q3-SpC">
+                                    <rect key="frame" x="713" y="99" width="76" height="17"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <textFieldCell key="cell" lineBreakMode="clipping" title="H-Size" id="wLx-GS-7C8">
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WLs-OQ-pht">
+                                    <rect key="frame" x="713" y="33" width="76" height="17"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <textFieldCell key="cell" lineBreakMode="clipping" title="V-Size" id="pEr-Qq-3lB">
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
                             </subviews>
                             <connections>
                                 <outlet property="cols" destination="5JF-rJ-Z8V" id="RrL-fh-2pu"/>
                                 <outlet property="hPanel" destination="5bC-PU-yRt" id="wIx-p0-SYg"/>
+                                <outlet property="hSize" destination="JPG-Dx-LBQ" id="I1b-xJ-jkp"/>
                                 <outlet property="hStart" destination="f8r-FD-gqR" id="KWa-bw-WOm"/>
                                 <outlet property="rows" destination="S2w-G6-tn7" id="nZO-cF-xAb"/>
                                 <outlet property="vPanel" destination="qT4-GP-Yew" id="2dR-mg-nR4"/>
+                                <outlet property="vSize" destination="Xr6-DX-IqB" id="PJY-yA-aut"/>
                                 <outlet property="vStart" destination="mvj-1g-jxB" id="BRk-20-j9G"/>
                             </connections>
                         </view>
@@ -922,6 +957,28 @@
                             <action selector="exportToPNG:" target="Voe-Tx-rLC" id="Ntf-a9-a2B"/>
                         </connections>
                     </button>
+                    <scrollView fixedFrame="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4GQ-zK-1UB">
+                        <rect key="frame" x="10" y="198" width="850" height="458"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <clipView key="contentView" ambiguous="YES" id="vkt-ds-2p1">
+                            <rect key="frame" x="1" y="1" width="848" height="456"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <view identifier="mainViewRoster" autoresizesSubviews="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="R5i-c0-2VG" customClass="drawMainUi" customModule="Pixel_Perfect" customModuleProvider="target">
+                                    <rect key="frame" x="0.0" y="0.0" width="833" height="441"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                </view>
+                            </subviews>
+                        </clipView>
+                        <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="Ysl-ze-SX3">
+                            <rect key="frame" x="1" y="441" width="848" height="16"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                        <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="b7u-AF-AjL">
+                            <rect key="frame" x="833" y="1" width="16" height="456"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                    </scrollView>
                 </subviews>
             </view>
             <point key="canvasLocation" x="320.5" y="92"/>

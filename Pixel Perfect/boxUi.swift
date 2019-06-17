@@ -39,8 +39,11 @@ class boxUi: NSView {
        // initValues()
         drawUI2()
     }
-  
 
+  
+    override var isFlipped: Bool{
+     return true
+    }
     
     func UpdateUi(){
         self.subviews.removeAll()

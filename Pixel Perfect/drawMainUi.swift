@@ -31,13 +31,27 @@ class myLayout{
 
 class drawMainUi: NSView {
 
+    
     var currentLayoutIndex: Int = -1
     var layouts = [myLayout]()
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+        
         print("drawMainUi.init")
         initBasic()
         registerNotification()
+    //    self.isFlipped = true
+    }
+    
+
+    override func mouseDown(with event:NSEvent){
+        print("mouse click ")
+        let point = NSEvent.mouseLocation
+        self.frame.origin = point
+        
+        //let position = click.location(in: view)
+        print("x = \(point.x) \ny = \(point.y) ")
     }
     
     
@@ -101,7 +115,29 @@ class drawMainUi: NSView {
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.removeLayout(_:)), name: NSNotification.Name(rawValue: "removeLayout"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.updateSelectedIndex(_:)), name: NSNotification.Name(rawValue: "selectionChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.exportToPNG(_:)), name: NSNotification.Name(rawValue: "exportToPNG"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.updateRoster(_:)), name: NSNotification.Name(rawValue: "hSize"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.updateRoster(_:)), name: NSNotification.Name(rawValue: "vSize"), object: nil)
+
     }
+    @objc func updateRoster(_ notification: NSNotification){
+        let name = notification.name.rawValue
+        let value = notification.userInfo?["value"]
+         if(value as! String != ""){
+            switch name{
+            case "hSize":
+                self.frame.size.width = CGFloat(Int((value) as! String)!)
+                break
+            case "vSize":
+                self.frame.size.height = CGFloat(Int((value) as! String)!)
+                break
+            default:
+                print("wrong notification")
+                
+            }
+            self.layoutSubtreeIfNeeded()
+        }
+    }
+    
      @objc func exportToPNG(_ notification: NSNotification){
       // let rect = CGRect(x: 0, y: 0, width: 100, height: 100)
       // var myView = NSView(frame: rect)
@@ -112,9 +148,16 @@ class drawMainUi: NSView {
             print(i)
             myView.addSubview(views)
         }*/
+
+       // myView.bounds.size.width = CGFloat(1920) ;
+       // myView.bounds.size.height = CGFloat(1080) ;
+      //  myView.frame.size.width = 1920;
+       // myView.frame.size.height = 1080;
+
+        print("width \(myView.frame.size.width) height\(myView.frame.size.height)")
         var rep = myView.bitmapImageRepForCachingDisplay(in: myView.bounds)!
         myView.cacheDisplay(in: myView.bounds, to: rep)
-        var image = "myTestimage.png"
+        var image = "/Users/niravpatel/Documents/Garbage/myTestimage.png"
         var url = URL(fileURLWithPath: image)
         if let data = rep.representation(using: NSBitmapImageRep.FileType.png, properties: [:]) {
             do{

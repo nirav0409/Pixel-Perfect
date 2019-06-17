@@ -16,6 +16,8 @@ class downBarUi: NSView {
     @IBOutlet weak var rows: NSTextField!
     @IBOutlet weak var hStart: NSTextField!
     @IBOutlet weak var vStart: NSTextField!
+    @IBOutlet weak var hSize: NSTextField!
+    @IBOutlet weak var vSize: NSTextField!
 
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
@@ -25,10 +27,12 @@ class downBarUi: NSView {
         rows.intValue = 1;
         hStart.intValue = 0;
         vStart.intValue = 0;
+        
         NotificationCenter.default.addObserver(self, selector: #selector(downBarUi.updateBoxes(_:)), name: NSNotification.Name(rawValue: "updateBoxes"), object: nil)
+        
         // Drawing code here.
+        
     }
-    
 
     @objc func updateBoxes(_ notification: NSNotification){
         let value = notification.userInfo?["value"]
@@ -42,7 +46,7 @@ class downBarUi: NSView {
     }
     @IBAction func NsTextViewChanged(_ sender: NSTextField) {
         var value = sender.stringValue
-        
+        value = value.replacingOccurrences(of: ",", with: "")
         switch sender.identifier?.rawValue {
         case "hPanel":
             print("h panel changed")
@@ -70,8 +74,14 @@ class downBarUi: NSView {
         case "vStart":
             print("V Start Changed")
             NotificationCenter.default.post(name : NSNotification.Name(rawValue: "vStart") , object: self , userInfo: ["value" : value])
-
             
+        case "hSize":
+            print("V Start Changed")
+            NotificationCenter.default.post(name : NSNotification.Name(rawValue: "hSize") , object: self , userInfo: ["value" : value])
+            
+        case "vSize":
+            print("V Start Changed")
+            NotificationCenter.default.post(name : NSNotification.Name(rawValue: "vSize") , object: self , userInfo: ["value" : value])
         default:
             print("noting")
         }
