@@ -23,14 +23,14 @@ class sideBarCollectionView: NSCollectionViewItem {
         super.viewDidLoad()
         // Do view setup here.
 
-        print("sideBarCollectionView.viewDidLoad")
+        print("sideBarCollectionView:viewDidLoad")
         self.view.wantsLayer = true
         view.layer?.backgroundColor = NSColor.black.cgColor
     
     }
     func updateColor(){
         if isSelected{
-            print("sideBarCollectionView.updateColor")
+            print("sideBarCollectionView:updateColor")
             switch highlightState {
             case .none:
                 view.layer?.backgroundColor = NSColor.black.cgColor

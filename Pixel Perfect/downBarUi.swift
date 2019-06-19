@@ -18,16 +18,63 @@ class downBarUi: NSView {
     @IBOutlet weak var vStart: NSTextField!
     @IBOutlet weak var hSize: NSTextField!
     @IBOutlet weak var vSize: NSTextField!
+    @IBOutlet weak var lineColor: NSColorWell!
+    @IBOutlet weak var evenColor: NSColorWell!
+    @IBOutlet weak var oddColor: NSColorWell!
 
+ 
+
+    @IBAction func CheckboxChecked(_ sender: NSButton) {
+        print("downBarUi:CheckboxChecked")
+
+        let mySender =  sender.identifier?.rawValue
+        switch mySender {
+        case "labelCheckBox":
+            print("bull's eye")
+            NotificationCenter.default.post(name : NSNotification.Name(rawValue: "labelCheckBox") , object: self , userInfo: ["value" : sender.intValue])
+            return
+        default:
+            print("wrong checkBox :\(mySender)")
+        }
+    }
+    
+    
+    @IBAction func ColorChangeListerner(_ sender: NSColorWell) {
+        print("downBarUi:ColorChangeListerner")
+
+        let mySender =  sender.identifier?.rawValue
+        let value = sender.color
+        switch mySender {
+        case "evenColorPicker":
+            NotificationCenter.default.post(name : NSNotification.Name(rawValue: "evenColorPicker") , object: self , userInfo: ["value" : value])
+            return
+        case "oddColorPicker":
+            NotificationCenter.default.post(name : NSNotification.Name(rawValue: "oddColorPicker") , object: self , userInfo: ["value" : value])
+            return
+        case "lineColor":
+            NotificationCenter.default.post(name : NSNotification.Name(rawValue: "lineColor") , object: self , userInfo: ["value" : value])
+            return
+        default:
+            print("wrong ColorPicker : \(mySender)")
+        }
+    }
+    
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
+        print("downBarUi:draw")
+
         hPanel.intValue = 80;
         vPanel.intValue = 80;
         cols.intValue = 1;
         rows.intValue = 1;
         hStart.intValue = 0;
         vStart.intValue = 0;
-        
+        hSize.intValue = 1920;
+        vSize.intValue = 1080;
+
+        evenColor.color = NSColor.orange
+        oddColor.color = NSColor.red
+        lineColor.color = NSColor.blue
         NotificationCenter.default.addObserver(self, selector: #selector(downBarUi.updateBoxes(_:)), name: NSNotification.Name(rawValue: "updateBoxes"), object: nil)
         
         // Drawing code here.
@@ -35,6 +82,8 @@ class downBarUi: NSView {
     }
 
     @objc func updateBoxes(_ notification: NSNotification){
+        print("downBarUi:updateBoxes")
+
         let value = notification.userInfo?["value"]
         let layout =  value as! myLayout
         hPanel.intValue = Int32(layout.totalWidth)
@@ -43,8 +92,15 @@ class downBarUi: NSView {
         rows.intValue = Int32((layout.countY))
         hStart.intValue = Int32((layout.startXPoint))
         vStart.intValue = Int32((layout.startYPoint))
+        evenColor.color = layout.evenColor
+        oddColor.color = layout.oddColor
+        lineColor.color = layout.lineColor
+
+        
     }
     @IBAction func NsTextViewChanged(_ sender: NSTextField) {
+        print("downBarUi:NsTextViewChanged")
+
         var value = sender.stringValue
         value = value.replacingOccurrences(of: ",", with: "")
         switch sender.identifier?.rawValue {

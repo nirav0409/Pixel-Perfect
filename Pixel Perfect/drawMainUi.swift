@@ -15,56 +15,61 @@ class myLayout{
     var startYPoint = 0
     var countX = 1
     var countY = 1
+    var boxHeight = 80
+    var boxWidth = 80
     var totalHeight = 80
     var totalWidth = 80
-    var offset = 1
-    
+    var evenColor = NSColor.orange
+    var oddColor = NSColor.red
+    var lineColor = NSColor.blue
+    var offsetColor = NSColor.yellow
+    var offset = 0
+    var label = true
+
     init(){
         
     }
     func getRect() -> CGRect{
-        var rect = CGRect(x: startXPoint, y: startYPoint, width: ((totalWidth+offset) * countX + offset) , height: ((totalHeight+offset) * countY + offset))
-        return rect
+        print("myLayout:getRect")
+        totalWidth = ((boxWidth + offset) * countX) + offset
+        totalHeight = ((boxHeight + offset) * countY) + offset
+        return CGRect(x: startXPoint, y: startYPoint, width: totalWidth, height: totalHeight)
+        
     }
     
 }
 
-class drawMainUi: NSView {
+class drawMainUi: NSView{
 
-    
     var currentLayoutIndex: Int = -1
     var layouts = [myLayout]()
 
+    override var isFlipped: Bool{
+        return true
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        
-        print("drawMainUi.init")
+        print("drawMainUi:init")
         initBasic()
         registerNotification()
-    //    self.isFlipped = true
     }
     
 
-    override func mouseDown(with event:NSEvent){
-        print("mouse click ")
-        let point = NSEvent.mouseLocation
-        self.frame.origin = point
-        
-        //let position = click.location(in: view)
-        print("x = \(point.x) \ny = \(point.y) ")
-    }
     
     
     func initBasic(){
+         print("drawMainUi:initBasic")
         var layout = myLayout()
         var rect = layout.getRect()
         var headerView = boxUi(rect ,layout)
         headerView?.wantsLayer = true
         headerView?.layer?.backgroundColor = NSColor.yellow.cgColor
-       
         layouts.append(layout)
         self.currentLayoutIndex = 0
         self.subviews.append((headerView)!)
+        self.frame.size.height = 1080
+        self.frame.size.width = 1920
         
     }
 
@@ -72,11 +77,13 @@ class drawMainUi: NSView {
     
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-        print("drawMainUi.draw")
+        print("drawMainUi:draw")
+
     }
     
     @objc func addLayout(_ notification: NSNotification){
-        
+        print("drawMainUi:addLayout")
+
         var layout = myLayout()
         var rect = layout.getRect()
         var headerView = boxUi(rect ,layout)
@@ -89,7 +96,8 @@ class drawMainUi: NSView {
 
     }
     @objc func removeLayout(_ notification: NSNotification){
-        
+        print("drawMainUi:removeLayout")
+
         if(layouts.count > 0){
             self.subviews.remove(at: self.currentLayoutIndex)
             layouts.remove(at: self.currentLayoutIndex)
@@ -105,6 +113,8 @@ class drawMainUi: NSView {
     }
     
      func registerNotification()  {
+        print("drawMainUi:registerNotification")
+
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.drawUI(_:)), name: NSNotification.Name(rawValue: "hPanel"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.drawUI(_:)), name: NSNotification.Name(rawValue: "vPanel"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.drawUI(_:)), name: NSNotification.Name(rawValue: "cols"), object: nil)
@@ -117,67 +127,129 @@ class drawMainUi: NSView {
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.exportToPNG(_:)), name: NSNotification.Name(rawValue: "exportToPNG"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.updateRoster(_:)), name: NSNotification.Name(rawValue: "hSize"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.updateRoster(_:)), name: NSNotification.Name(rawValue: "vSize"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.updateBoxColor(_:)), name: NSNotification.Name(rawValue: "oddColorPicker"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.updateBoxColor(_:)), name: NSNotification.Name(rawValue: "evenColorPicker"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.updateBoxColor(_:)), name: NSNotification.Name(rawValue: "lineColor"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.labelCheckBoxChanged(_:)), name: NSNotification.Name(rawValue: "labelCheckBox"), object: nil)
+
 
     }
+    
+    
+    
+    @objc func labelCheckBoxChanged(_ notification: NSNotification){
+        print("drawMainUi:labelCheckBoxChanged")
+
+    }
+    
+    @objc func updateBoxColor(_ notification: NSNotification){
+        print("drawMainUi:updateBoxColor")
+
+        let name = notification.name.rawValue
+        let selectedColor = notification.userInfo?["value"] as! NSColor
+        switch name {
+        case "oddColorPicker":
+            if(self.layouts[self.currentLayoutIndex].oddColor != selectedColor){
+                self.layouts[self.currentLayoutIndex].oddColor = selectedColor
+                updateSelectedLayout()
+            }
+            break
+        case "evenColorPicker":
+            if(self.layouts[self.currentLayoutIndex].evenColor != selectedColor){
+                self.layouts[self.currentLayoutIndex].evenColor = selectedColor
+                updateSelectedLayout()
+            }
+        break
+        case "lineColor":
+            if(self.layouts[self.currentLayoutIndex].lineColor != selectedColor){
+                self.layouts[self.currentLayoutIndex].lineColor = selectedColor
+                updateSelectedLayout()
+            }
+        case "offsetColor":
+            if(self.layouts[self.currentLayoutIndex].offsetColor != selectedColor){
+                self.layouts[self.currentLayoutIndex].offsetColor = selectedColor
+                updateSelectedLayout()
+            }
+        default:
+            print("wrong Color Picker:  \(name)")
+        }
+    }
     @objc func updateRoster(_ notification: NSNotification){
+        print("drawMainUi:updateRoster")
+
         let name = notification.name.rawValue
         let value = notification.userInfo?["value"]
          if(value as! String != ""){
+            print("update roster")
             switch name{
             case "hSize":
-                self.frame.size.width = CGFloat(Int((value) as! String)!)
+                if(self.frame.size.width != CGFloat(Int((value) as! String)!)){
+                    self.frame.size.width = CGFloat(Int((value) as! String)!)
+                    self.layoutSubtreeIfNeeded()
+                }
                 break
             case "vSize":
-                self.frame.size.height = CGFloat(Int((value) as! String)!)
+                if(self.frame.size.height != CGFloat(Int((value) as! String)!)){
+                    self.frame.size.height = CGFloat(Int((value) as! String)!)
+                    self.layoutSubtreeIfNeeded()
+                }
                 break
             default:
-                print("wrong notification")
+                print("wrong updateRoaster: \(name)")
                 
             }
-            self.layoutSubtreeIfNeeded()
         }
     }
     
+    
+    
      @objc func exportToPNG(_ notification: NSNotification){
-      // let rect = CGRect(x: 0, y: 0, width: 100, height: 100)
-      // var myView = NSView(frame: rect)
-        var i : Int = 0
-        var myView = self as! NSView
-        /*for views in self.subviews{
-            i += 1
-            print(i)
-            myView.addSubview(views)
-        }*/
-
-       // myView.bounds.size.width = CGFloat(1920) ;
-       // myView.bounds.size.height = CGFloat(1080) ;
-      //  myView.frame.size.width = 1920;
-       // myView.frame.size.height = 1080;
-
-        print("width \(myView.frame.size.width) height\(myView.frame.size.height)")
-        var rep = myView.bitmapImageRepForCachingDisplay(in: myView.bounds)!
-        myView.cacheDisplay(in: myView.bounds, to: rep)
-        var image = "/Users/niravpatel/Documents/Garbage/myTestimage.png"
-        var url = URL(fileURLWithPath: image)
-        if let data = rep.representation(using: NSBitmapImageRep.FileType.png, properties: [:]) {
-            do{
-                try data.write(to: url)
-            } catch let error {
-                print("Error: \(error)")
-            }
+        print("drawMainUi:exportToPNG")
+        let savePanel = NSSavePanel();
+        savePanel.title = "Select a folder"
+        savePanel.message = "Please enter PNG file Name and Select Folder"
+        savePanel.begin { (result) -> Void in
+           
+            if(result.rawValue == NSApplication.ModalResponse.OK.rawValue){
+                var path = savePanel.url!.path
+                print("selected folder is \(path)");
+                if(!(path.contains(".png") || path.contains(".PNG"))){
+                 path = path + ".png"
+                }
+                var myView = self as! NSView
+                print("width \(myView.frame.size.width) height\(myView.frame.size.height)")
+                var rep = myView.bitmapImageRepForCachingDisplay(in: myView.bounds)!
+                myView.cacheDisplay(in: myView.bounds, to: rep)
+                
+               // var image = "/Users/niravpatel/Documents/Garbage/myTestimage.png"
             
+                var url = URL(fileURLWithPath: path)
+                if let data = rep.representation(using: NSBitmapImageRep.FileType.png, properties: [:]) {
+                    do{
+                        try data.write(to: url)
+                    } catch let error {
+                        print("Error: \(error)")
+                    }
+                    
+                }
+
+            }
         }
+        
         
     }
  
  
         @objc func updateSelectedIndex(_ notification: NSNotification){
+            print("drawMainUi:updateSelectedIndex")
+
         let value = notification.userInfo?["value"]
         self.currentLayoutIndex = value as! Int
         NotificationCenter.default.post(name : NSNotification.Name(rawValue: "updateBoxes") , object: self,userInfo: ["value" : self.layouts[self.currentLayoutIndex]])
     }
     @objc func drawUI(_ notification: NSNotification){
-        
+        print("drawMainUi:drawUI")
+
         let name = notification.name.rawValue
         var update = false
         let value = notification.userInfo?["value"]
@@ -188,13 +260,13 @@ class drawMainUi: NSView {
         }
         switch name {
         case "hPanel":
-            if(self.layouts[self.currentLayoutIndex].totalWidth != Int((value) as! String)!){
-               self.layouts[self.currentLayoutIndex].totalWidth = Int((value) as! String)!
+            if(self.layouts[self.currentLayoutIndex].boxWidth != Int((value) as! String)!){
+               self.layouts[self.currentLayoutIndex].boxWidth = Int((value) as! String)!
                 update = true
             }
         case "vPanel":
-            if(self.layouts[self.currentLayoutIndex].totalHeight != Int((value) as! String)!){
-                self.layouts[self.currentLayoutIndex].totalHeight = Int((value) as! String)!
+            if(self.layouts[self.currentLayoutIndex].boxHeight != Int((value) as! String)!){
+                self.layouts[self.currentLayoutIndex].boxHeight = Int((value) as! String)!
                 update = true
             }
         case "cols":
@@ -217,24 +289,27 @@ class drawMainUi: NSView {
                 self.layouts[self.currentLayoutIndex].startYPoint = Int((value) as! String)!
                 update = true
             }
+        
         default:
             print("error")
         }
         if(update){
-            print("updating layout")
-            self.subviews.remove(at: self.currentLayoutIndex)
-            var rect = layouts[self.currentLayoutIndex].getRect()
-            var headerView = boxUi(rect ,layouts[self.currentLayoutIndex])
-            headerView?.wantsLayer = true
-            headerView?.layer?.backgroundColor = NSColor.yellow.cgColor
-            self.subviews.insert(headerView!, at: currentLayoutIndex)
-            self.layoutSubtreeIfNeeded()
-             NotificationCenter.default.post(name : NSNotification.Name(rawValue: "updateLayoutDetials") , object: self,userInfo: ["value" : self.layouts[self.currentLayoutIndex]])
+            updateSelectedLayout()
         }
    
         
     }
     
-    
+    func updateSelectedLayout(){
+        print("drawMainUi:updateSelectedLayout")
+    self.subviews.remove(at: self.currentLayoutIndex)
+    var rect = layouts[self.currentLayoutIndex].getRect()
+    var headerView = boxUi(rect ,layouts[self.currentLayoutIndex])
+    headerView?.wantsLayer = true
+    headerView?.layer?.backgroundColor = NSColor.yellow.cgColor
+    self.subviews.insert(headerView!, at: currentLayoutIndex)
+    self.layoutSubtreeIfNeeded()
+    NotificationCenter.default.post(name : NSNotification.Name(rawValue: "updateLayoutDetials") , object: self,userInfo: ["value" : self.layouts[self.currentLayoutIndex]])
+    }
     
 }

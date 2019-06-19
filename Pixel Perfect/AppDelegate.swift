@@ -15,10 +15,13 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
     var selectedIndex : Int = 0
 
     func collectionView(_ collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
+        print("AppDelegate:numberOfItemsInSection")
         return count
     }
     
     func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
+        print("AppDelegate:itemForRepresentedObjectAt")
+
         let collectionViewItem = NSUserInterfaceItemIdentifier("sideBarCollectionView")
         let item = collectionView.makeItem(withIdentifier: collectionViewItem, for: indexPath)
         item.textField?.stringValue = "80 Panel-H \n80 Panel-V \n1 Cols \n1 Rows "
@@ -33,12 +36,14 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
     @IBOutlet weak var window: NSWindow!
 
     @IBAction func exportToPNG(_ sender: Any) {
+        print("AppDelegate:exportToPNG")
+
          NotificationCenter.default.post(name : NSNotification.Name(rawValue: "exportToPNG") , object: self)
     }
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
-        print("appDelegate.applicationDidFinishLaunching")
+        print("appDelegate:applicationDidFinishLaunching")
         let collectionViewItem = NSUserInterfaceItemIdentifier("sideBarCollectionView")
         let item = NSNib(nibNamed: "sideBarCollectionView", bundle: nil)
         sideColView.register(item, forItemWithIdentifier: collectionViewItem)
@@ -55,6 +60,8 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
 
     }
     @objc func updateLayoutDetials(_ notification : NSNotification){
+        print("appDelegate:updateLayoutDetials")
+
         var layout  = notification.userInfo?["value"] as! myLayout
         
         sideColView.item(at: self.selectedIndex)?.textField?.stringValue = "\(layout.totalWidth) Panel-H \n\(layout.totalHeight) Panel-V \n\(layout.countX) Cols  \n\(layout.countY) Rows"
@@ -62,7 +69,7 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
     
     
     @IBAction func removeButtonClicked(_ sender: Any) {
-        print("Remove Layout")
+        print("appDelegate:removeButtonClicked")
         if(count > 0){
         let removeAtIndexPath = IndexPath(item: selectedIndex, section: 0)
         var indexPaths: Set<IndexPath> = []
@@ -75,7 +82,7 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
 
     }
     @IBAction func addButtonClicked(_ sender: Any) {
-        print("add Layout")
+        print("appDelegate:addButtonClicked")
         let insertAtIndexPath = IndexPath(item: count, section: 0)
         count = count+1
         var indexPaths: Set<IndexPath> = []
@@ -93,7 +100,8 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
     }
     
     func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
-      
+        print("appDelegate:didSelectItemsAt")
+
         self.selectedIndex = (indexPaths.first)![1]
         NotificationCenter.default.post(name : NSNotification.Name(rawValue: "selectionChanged") , object: self,userInfo: ["value" : (indexPaths.first)![1]])
         
@@ -101,6 +109,8 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
 
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
+        print("appDelegate:applicationWillTerminate")
+
     }
 
     
