@@ -16,6 +16,9 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
     var selectedItem : Set<IndexPath> = [[0,0]]
     var leftcount = 0
     var presetLayouts = [presetLayout]()
+    var loadFilePath : String = ""
+    var appDir : String = ""
+    var appName: String = "PixelPerfect"
 
     func collectionView(_ collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
         print("AppDelegate:numberOfItemsInSection")
@@ -62,17 +65,42 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
     @IBOutlet weak var window: NSWindow!
     @IBOutlet weak var leftSideColView: NSCollectionView!
     
-    
+    func expandingTildeInPath(_ path: String) -> String {
+        return path.replacingOccurrences(of: "~", with: FileManager.default.homeDirectoryForCurrentUser.path)
+    }
     @IBAction func exportToPNG(_ sender: Any) {
         print("AppDelegate:exportToPNG")
 
          NotificationCenter.default.post(name : NSNotification.Name(rawValue: "exportToPNG") , object: self)
     }
     
+
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
         //right side collection View
         print("appDelegate:applicationDidFinishLaunching")
+        
+        //check folder is there or not
+        self.appDir = expandingTildeInPath("~/Library/Application Support/\(self.appName)")
+        self.loadFilePath = self.appDir + "/load.txt"
+        print("dir check: \(FileManager.default.fileExists(atPath: self.appDir))")
+        if(!FileManager.default.fileExists(atPath: self.appDir)){
+            do
+            {
+                try FileManager.default.createDirectory(atPath: self.appDir, withIntermediateDirectories: true, attributes: nil)
+                try FileManager.default.createFile(atPath: self.loadFilePath, contents: nil, attributes: nil)
+                let text = "100*100*1*1#"
+                let fileURL = URL(fileURLWithPath: self.loadFilePath)
+                try text.write(to: fileURL , atomically: false, encoding: .utf8)
+            }
+            catch let error as NSError
+            {
+                print("Unable to create directory \(error.debugDescription)")
+            }
+        }
+        
+        
+        
         let collectionViewItem = NSUserInterfaceItemIdentifier("sideBarCollectionView")
         let item = NSNib(nibNamed: "sideBarCollectionView", bundle: nil)
         sideColView.register(item, forItemWithIdentifier: collectionViewItem)
@@ -109,11 +137,10 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
     
     func readFromFile(){
         print("appDelegate:readFromFile")
-        let file = "Garbage/readFilePath/load.txt" //this is the file. we will write to and read from it
 
-        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+
             
-            let fileURL = dir.appendingPathComponent(file)
+        let fileURL = URL(fileURLWithPath: self.loadFilePath)
             do {
                 let text = try String(contentsOf: fileURL, encoding: .utf8)
                 let text2 = text.split(separator: "\n")[0].split(separator: "#")
@@ -127,15 +154,14 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
                 print("error",error)}
         }
         
-    }
+    
     
     func writeToFile(){
         print("appDelegate:writeToFile")
-        let file = "Garbage/readFilePath/load.txt" //this is the file. we will write to and read from it
-        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+
             
-            let fileURL = dir.appendingPathComponent(file)
-            do {
+        let fileURL = URL(fileURLWithPath: self.loadFilePath)
+        do {
                 var text : String = ""
                 for p in presetLayouts{
                     let data = "\(p.hSize)*\(p.vSize)*\(p.countX)*\(p.countY)#"
@@ -147,7 +173,7 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
                 print("error" , error)
             }
 
-        }
+        
     }
     @objc func updateleftLayoutDetails(_ notification : NSNotification){
         print("appDelegate:updateleftLayoutDetails")
