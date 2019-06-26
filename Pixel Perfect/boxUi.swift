@@ -10,6 +10,8 @@ import Cocoa
 
 class boxUi: NSView {
 
+    var hStart = 0
+    var vStart = 0
     var startXPoint = 0
     var startYPoint = 0
     var countX = 1
@@ -22,11 +24,16 @@ class boxUi: NSView {
     var oddColor = NSColor.red
     var lineColor = NSColor.blue
     var offset = 0
-    var label = true
+    var label = 1
+    var labelColor = NSColor.white
+    var labelFontSize = 10
+    var outlineSize = 0
     
     required init?(_ dirtyRect: NSRect,_ layout :myLayout){
         super.init(frame :dirtyRect)
         print("boxUi:init")
+        self.hStart = layout.startXPoint
+        self.vStart = layout.startYPoint
         self.startXPoint = offset
         self.startYPoint = offset
         self.countX = layout.countX
@@ -39,7 +46,9 @@ class boxUi: NSView {
         self.oddColor = layout.oddColor
         self.lineColor = layout.lineColor
         self.label = layout.label
-
+        self.labelColor = layout.labelColor
+        self.labelFontSize = layout.labelFontSize
+        self.outlineSize = layout.outlineSize
         
     }
     
@@ -79,22 +88,25 @@ class boxUi: NSView {
                 }else{
                      boxColor = self.evenColor
                 }
-                drawRact(startX, startYPoint: startY , h: boxHeight, w: boxWidth , boxColor: boxColor)
+                if(indexX == 0 && indexY == (countY-1) && self.label == 1){
+                    drawRact(startX, startYPoint: startY , h: boxHeight, w: boxWidth , boxColor: boxColor, label: 1)
+                    
+                }else{
+                    drawRact(startX, startYPoint: startY , h: boxHeight, w: boxWidth , boxColor: boxColor , label : 0)
+                }
                 startX = startX + boxWidth + offset
             }
             startX = startXPoint
             startY = startY + boxHeight + offset
         }
         //crossLine Going Upwords
-        let lineHeight = (totalHeight + offset) * countY
-        let lineWidth  = (totalWidth + offset) * countX
         drawCrossUpwordsLine(startXPoint,startYPoint: startYPoint,h: totalHeight,w: totalWidth)
         
         //crossLine Going Downwords
         drawCrossDownwordsLine(startXPoint,startYPoint: startYPoint,h: totalHeight,w: totalWidth)
         
     }
-    func drawRact(_ startXPoint: Int, startYPoint: Int, h: Int, w: Int , boxColor: NSColor){
+    func drawRact(_ startXPoint: Int, startYPoint: Int, h: Int, w: Int , boxColor: NSColor, label:Int){
         print("boxUi:drawRact")
 
         let cg = CGRect(x: startXPoint, y: (Int(bounds.height)-startYPoint-h), width: w, height: h)
@@ -102,6 +114,15 @@ class boxUi: NSView {
         boxColor.setFill()
     //    NSColor.blue.setFill()
         smallRact.fill()
+
+        if(label == 1){
+            let label = NSTextField(frame : cg)
+            label.textColor = self.labelColor
+            label.alignment = .left
+            label.font = NSFont(name: "Arial", size: CGFloat(self.labelFontSize))
+            label.stringValue = "H:\(self.hStart) V:\(self.vStart)"
+            self.addSubview(label)
+        }
         
     }
     
@@ -115,6 +136,7 @@ class boxUi: NSView {
         let  endY = (Int(bounds.height) - startYPoint)
         
         let crossUpPath = NSBezierPath()
+        crossUpPath.lineWidth = CGFloat(self.outlineSize)
         self.lineColor.setStroke()
 
         crossUpPath.move(to: NSPoint(x: startX, y: startY))
@@ -131,7 +153,8 @@ class boxUi: NSView {
         let  endY = (Int(bounds.height) - startYPoint) - h
 
         let crossDownPath = NSBezierPath()
-        
+        crossDownPath.lineWidth = CGFloat(self.outlineSize)
+
         crossDownPath.move(to: NSPoint(x: startX, y: startY))
         crossDownPath.line(to: NSPoint(x: endX, y: endY))
         self.lineColor.setStroke()

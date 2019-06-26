@@ -24,10 +24,18 @@ class myLayout{
     var lineColor = NSColor.blue
     var offsetColor = NSColor.yellow
     var offset = 0
-    var label = true
-
+    var label = 1
+    var labelColor = NSColor.white
+    var labelFontSize = 10
+    var outlineSize = 0
     init(){
         
+    }
+    init(_ preset : presetLayout){
+        self.boxWidth = preset.hSize
+        self.boxHeight = preset.vSize
+        self.countX = preset.countX
+        self.countY = preset.countY
     }
     func getRect() -> CGRect{
         print("myLayout:getRect")
@@ -36,6 +44,7 @@ class myLayout{
         return CGRect(x: startXPoint, y: startYPoint, width: totalWidth, height: totalHeight)
         
     }
+    
     
 }
 
@@ -60,9 +69,9 @@ class drawMainUi: NSView{
     
     func initBasic(){
          print("drawMainUi:initBasic")
-        var layout = myLayout()
-        var rect = layout.getRect()
-        var headerView = boxUi(rect ,layout)
+        let layout = myLayout()
+        let rect = layout.getRect()
+        let headerView = boxUi(rect ,layout)
         headerView?.wantsLayer = true
         headerView?.layer?.backgroundColor = NSColor.yellow.cgColor
         layouts.append(layout)
@@ -83,31 +92,29 @@ class drawMainUi: NSView{
     
     @objc func addLayout(_ notification: NSNotification){
         print("drawMainUi:addLayout")
-
-        var layout = myLayout()
-        var rect = layout.getRect()
-        var headerView = boxUi(rect ,layout)
+        let layoutDetails = notification.userInfo?["value"] as! presetLayout
+        let layout = myLayout(layoutDetails)
+        let rect = layout.getRect()
+        let headerView = boxUi(rect ,layout)
         headerView?.wantsLayer = true
         headerView?.layer?.backgroundColor = NSColor.yellow.cgColor
         layouts.append(layout)
         self.subviews.append(headerView!)
         self.currentLayoutIndex = layouts.count - 1
+        NotificationCenter.default.post(name : NSNotification.Name(rawValue: "updateBoxes") , object: self,userInfo: ["value" : self.layouts[self.currentLayoutIndex]])
 
 
     }
     @objc func removeLayout(_ notification: NSNotification){
         print("drawMainUi:removeLayout")
-
-        if(layouts.count > 0){
+        if(layouts.count > 1){
             self.subviews.remove(at: self.currentLayoutIndex)
             layouts.remove(at: self.currentLayoutIndex)
-            if(layouts.count > 0){
-                self.currentLayoutIndex = 0
+            if(self.currentLayoutIndex != 0){
+                self.currentLayoutIndex = self.currentLayoutIndex - 1
             }
-            else{
-                self.currentLayoutIndex = -1
-                
-            }
+            NotificationCenter.default.post(name : NSNotification.Name(rawValue: "updateBoxes") , object: self,userInfo: ["value" : self.layouts[self.currentLayoutIndex]])
+
         }
 
     }
@@ -130,8 +137,10 @@ class drawMainUi: NSView{
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.updateBoxColor(_:)), name: NSNotification.Name(rawValue: "oddColorPicker"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.updateBoxColor(_:)), name: NSNotification.Name(rawValue: "evenColorPicker"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.updateBoxColor(_:)), name: NSNotification.Name(rawValue: "lineColor"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.drawUI(_:)), name: NSNotification.Name(rawValue: "outLineSize"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.labelCheckBoxChanged(_:)), name: NSNotification.Name(rawValue: "labelCheckBox"), object: nil)
-
+        NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.drawUI(_:)), name: NSNotification.Name(rawValue: "xyLabelFontSize"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(drawMainUi.updateBoxColor(_:)), name: NSNotification.Name(rawValue: "xyLabelColor"), object: nil)
 
     }
     
@@ -139,7 +148,19 @@ class drawMainUi: NSView{
     
     @objc func labelCheckBoxChanged(_ notification: NSNotification){
         print("drawMainUi:labelCheckBoxChanged")
-
+        let name = notification.name.rawValue
+        let checkBoxValue = notification.userInfo?["value"] as! Int32
+        switch name {
+        case "labelCheckBox":
+            if(self.layouts[self.currentLayoutIndex].label != checkBoxValue){
+                self.layouts[self.currentLayoutIndex].label = Int(checkBoxValue)
+                updateSelectedLayout()
+            }
+            break
+        default:
+            print("worong checkBox Selected:\(name) ")
+            
+        }
     }
     
     @objc func updateBoxColor(_ notification: NSNotification){
@@ -168,6 +189,11 @@ class drawMainUi: NSView{
         case "offsetColor":
             if(self.layouts[self.currentLayoutIndex].offsetColor != selectedColor){
                 self.layouts[self.currentLayoutIndex].offsetColor = selectedColor
+                updateSelectedLayout()
+            }
+        case "xyLabelColor":
+            if(self.layouts[self.currentLayoutIndex].labelColor != selectedColor){
+                self.layouts[self.currentLayoutIndex].labelColor = selectedColor
                 updateSelectedLayout()
             }
         default:
@@ -216,20 +242,22 @@ class drawMainUi: NSView{
                 if(!(path.contains(".png") || path.contains(".PNG"))){
                  path = path + ".png"
                 }
-                var myView = self as! NSView
+                var myView = self as NSView
                 print("width \(myView.frame.size.width) height\(myView.frame.size.height)")
+                print("bouns \(myView.bounds)")
+
                 var rep = myView.bitmapImageRepForCachingDisplay(in: myView.bounds)!
+                print("bouns \(myView.bounds)")
+
                 myView.cacheDisplay(in: myView.bounds, to: rep)
-                
-               // var image = "/Users/niravpatel/Documents/Garbage/myTestimage.png"
-            
-                var url = URL(fileURLWithPath: path)
+                let url = URL(fileURLWithPath: path)
                 if let data = rep.representation(using: NSBitmapImageRep.FileType.png, properties: [:]) {
                     do{
                         try data.write(to: url)
                     } catch let error {
                         print("Error: \(error)")
                     }
+
                     
                 }
 
@@ -253,7 +281,7 @@ class drawMainUi: NSView{
         let name = notification.name.rawValue
         var update = false
         let value = notification.userInfo?["value"]
-        print("drawMainUi.drawUI value \(value)")
+        print("drawMainUi.drawUI value \(String(describing: value))")
         if(value as! String == ""){
             return
             
@@ -289,6 +317,16 @@ class drawMainUi: NSView{
                 self.layouts[self.currentLayoutIndex].startYPoint = Int((value) as! String)!
                 update = true
             }
+        case "xyLabelFontSize":
+            if(self.layouts[self.currentLayoutIndex].labelFontSize != Int((value) as! String)!){
+                self.layouts[self.currentLayoutIndex].labelFontSize = Int((value) as! String)!
+                update = true
+            }
+        case "outLineSize":
+                if(self.layouts[self.currentLayoutIndex].outlineSize != Int((value) as! String)!){
+                    self.layouts[self.currentLayoutIndex].outlineSize = Int((value) as! String)!
+                    update = true
+            }
         
         default:
             print("error")
@@ -303,8 +341,8 @@ class drawMainUi: NSView{
     func updateSelectedLayout(){
         print("drawMainUi:updateSelectedLayout")
     self.subviews.remove(at: self.currentLayoutIndex)
-    var rect = layouts[self.currentLayoutIndex].getRect()
-    var headerView = boxUi(rect ,layouts[self.currentLayoutIndex])
+        let rect = layouts[self.currentLayoutIndex].getRect()
+        let headerView = boxUi(rect ,layouts[self.currentLayoutIndex])
     headerView?.wantsLayer = true
     headerView?.layer?.backgroundColor = NSColor.yellow.cgColor
     self.subviews.insert(headerView!, at: currentLayoutIndex)
@@ -312,4 +350,5 @@ class drawMainUi: NSView{
     NotificationCenter.default.post(name : NSNotification.Name(rawValue: "updateLayoutDetials") , object: self,userInfo: ["value" : self.layouts[self.currentLayoutIndex]])
     }
     
+
 }

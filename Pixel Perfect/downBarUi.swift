@@ -21,6 +21,9 @@ class downBarUi: NSView {
     @IBOutlet weak var lineColor: NSColorWell!
     @IBOutlet weak var evenColor: NSColorWell!
     @IBOutlet weak var oddColor: NSColorWell!
+    @IBOutlet weak var xyLabelColor: NSColorWell!
+    @IBOutlet weak var xyLabelFontSize: NSTextField!
+    @IBOutlet weak var outLineSize: NSTextField!
 
  
 
@@ -34,7 +37,7 @@ class downBarUi: NSView {
             NotificationCenter.default.post(name : NSNotification.Name(rawValue: "labelCheckBox") , object: self , userInfo: ["value" : sender.intValue])
             return
         default:
-            print("wrong checkBox :\(mySender)")
+            print("wrong checkBox :\(String(describing: mySender))")
         }
     }
     
@@ -54,8 +57,11 @@ class downBarUi: NSView {
         case "lineColor":
             NotificationCenter.default.post(name : NSNotification.Name(rawValue: "lineColor") , object: self , userInfo: ["value" : value])
             return
+        case "xyLabelColor":
+            NotificationCenter.default.post(name : NSNotification.Name(rawValue: "xyLabelColor") , object: self , userInfo: ["value" : value])
+            return
         default:
-            print("wrong ColorPicker : \(mySender)")
+            print("wrong ColorPicker : \(String(describing: mySender))")
         }
     }
     
@@ -86,8 +92,8 @@ class downBarUi: NSView {
 
         let value = notification.userInfo?["value"]
         let layout =  value as! myLayout
-        hPanel.intValue = Int32(layout.totalWidth)
-        vPanel.intValue = Int32((layout.totalHeight))
+        hPanel.intValue = Int32(layout.boxWidth)
+        vPanel.intValue = Int32((layout.boxHeight))
         cols.intValue = Int32((layout.countX))
         rows.intValue = Int32((layout.countY))
         hStart.intValue = Int32((layout.startXPoint))
@@ -132,12 +138,21 @@ class downBarUi: NSView {
             NotificationCenter.default.post(name : NSNotification.Name(rawValue: "vStart") , object: self , userInfo: ["value" : value])
             
         case "hSize":
-            print("V Start Changed")
+            print("H Size Changed")
             NotificationCenter.default.post(name : NSNotification.Name(rawValue: "hSize") , object: self , userInfo: ["value" : value])
             
         case "vSize":
-            print("V Start Changed")
+            print("V Size Changed")
             NotificationCenter.default.post(name : NSNotification.Name(rawValue: "vSize") , object: self , userInfo: ["value" : value])
+            
+        case "outLineSize":
+            print("outLine Size Changed")
+            NotificationCenter.default.post(name : NSNotification.Name(rawValue: "outLineSize") , object: self , userInfo: ["value" : value])
+            
+        case "xyLabelFontSize":
+            print("xyLabel Font Size  Changed")
+            NotificationCenter.default.post(name : NSNotification.Name(rawValue: "xyLabelFontSize") , object: self , userInfo: ["value" : value])
+            
         default:
             print("noting")
         }
