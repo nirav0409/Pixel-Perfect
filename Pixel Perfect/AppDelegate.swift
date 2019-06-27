@@ -19,6 +19,8 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
     var loadFilePath : String = ""
     var appDir : String = ""
     var appName: String = "PixelPerfect"
+    var trialCheckPath : String =  ""
+    var keyPath : String = ""
 
     func collectionView(_ collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
         print("AppDelegate:numberOfItemsInSection")
@@ -83,14 +85,25 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
         //check folder is there or not
         self.appDir = expandingTildeInPath("~/Library/Application Support/\(self.appName)")
         self.loadFilePath = self.appDir + "/load.txt"
+        self.trialCheckPath = self.appDir + "/trial.txt"
+        self.keyPath = self.appDir + "/key.txt"
         print("dir check: \(FileManager.default.fileExists(atPath: self.appDir))")
         if(!FileManager.default.fileExists(atPath: self.appDir)){
             do
             {
+                //create app dir
                 try FileManager.default.createDirectory(atPath: self.appDir, withIntermediateDirectories: true, attributes: nil)
+                
+                
+                //create loadFile
                 try FileManager.default.createFile(atPath: self.loadFilePath, contents: nil, attributes: nil)
-                let text = "100*100*1*1#"
-                let fileURL = URL(fileURLWithPath: self.loadFilePath)
+                var text = "100*100*1*1#"
+                var fileURL = URL(fileURLWithPath: self.loadFilePath)
+                try text.write(to: fileURL , atomically: false, encoding: .utf8)
+                
+                //create Trial Edition File
+                text = getTodayDate()
+                fileURL = URL(fileURLWithPath: self.trialCheckPath)
                 try text.write(to: fileURL , atomically: false, encoding: .utf8)
             }
             catch let error as NSError
@@ -100,6 +113,7 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
         }
         
         
+        trialCheck()
         
         let collectionViewItem = NSUserInterfaceItemIdentifier("sideBarCollectionView")
         let item = NSNib(nibNamed: "sideBarCollectionView", bundle: nil)
@@ -133,13 +147,66 @@ class AppDelegate: NSObject, NSApplicationDelegate,NSCollectionViewDelegate,NSCo
 
     }
     
- 
+    func getTodayDate() -> String{
+        let date = Date()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM.yyyy"
+        return formatter.string(from: date)
+    }
+
+    func trialCheck(){
+        
+        do{
+        let todayDate = Date()
+            
+        let fileURL = URL(fileURLWithPath: self.trialCheckPath)
+        let startDate = try String(contentsOf: fileURL, encoding: .utf8)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd.MM.yyyy"
+        let formatedStartDate = dateFormatter.date(from: startDate)!
+     //   let components = Set<Calendar.Component>([.second, .minute, .hour, .day, .month, .year])
+            let components = Set<Calendar.Component>([.day])
+            let diffInDays =  Calendar.current.dateComponents(components, from: formatedStartDate, to: todayDate)
+            print("diff :", diffInDays)
+            if(diffInDays.day! > 15 && keyCheck()){
+                print("outdated")
+                let alert = NSAlert()
+                alert.messageText = "Trial version outdated"
+                alert.informativeText = "Your Trial Period is finished. Please contact admin for full version"
+                alert.addButton(withTitle:"OK")
+                alert.beginSheetModal(for: window, completionHandler: handleOk)
+            }
+
+        }catch{
+            print("error :", error)
+        }
+    }
+    func handleOk(response: NSApplication.ModalResponse) {
+        NSApplication.shared.terminate(response)
+    }
+    func keyCheck()-> Bool{
+        print("AppDelegate:keyCheck")
+        let fileURL = URL(fileURLWithPath: self.keyPath)
+        do{
+            let text = try String(contentsOf: fileURL, encoding: .utf8)
+            let email_key = text.split(separator: "\n")
+            let key = email_key[1]
+            
+            //print("key is :",key[1])
+            
+            
+            
+            
+        }catch{
+            print("error :" , error)
+        }
+        
+        return false
+    }
     
     func readFromFile(){
         print("appDelegate:readFromFile")
-
-
-            
+        
         let fileURL = URL(fileURLWithPath: self.loadFilePath)
             do {
                 let text = try String(contentsOf: fileURL, encoding: .utf8)
